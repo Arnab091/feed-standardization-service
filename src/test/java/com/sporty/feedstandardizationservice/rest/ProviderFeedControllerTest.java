@@ -7,8 +7,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.sporty.feedstandardizationservice.message.internal.OddsUpdateMessage;
-import com.sporty.feedstandardizationservice.message.internal.SettlementMessage;
+import com.sporty.feedstandardizationservice.message.internal.BetSettlementMessage;
+import com.sporty.feedstandardizationservice.message.internal.OddsChangeMessage;
 import com.sporty.feedstandardizationservice.queue.QueueSender;
 import com.sporty.feedstandardizationservice.rest.alpha.ProviderAlphaFeedController;
 import com.sporty.feedstandardizationservice.rest.beta.ProviderBetaFeedController;
@@ -57,12 +57,12 @@ class ProviderFeedControllerTest {
                           "status": "accepted",
                           "provider": "provider-alpha",
                           "eventId": "match-1",
-                          "feedType": "odds_update"
+                          "msgType": "odds_update"
                         }
                         """, false));
 
-        assertEquals(new OddsUpdateMessage("match-1", 1.1f, 2.2f, 3.3f), queueSender.lastOddsUpdateMessage);
-        assertNull(queueSender.lastSettlementMessage);
+        assertEquals(new OddsChangeMessage("match-1", 1.1f, 2.2f, 3.3f), queueSender.lastOddsChangeMessage);
+        assertNull(queueSender.lastBetSettlementMessage);
     }
 
     @Test
@@ -83,13 +83,14 @@ class ProviderFeedControllerTest {
                           "status": "accepted",
                           "provider": "provider-alpha",
                           "eventId": "match-3",
-                          "feedType": "settlement"
+                          "msgType": "settlement"
                         }
                         """, false));
 
         assertEquals(
-                new SettlementMessage("match-3", SettlementMessage.OutCome.DRAW), queueSender.lastSettlementMessage);
-        assertNull(queueSender.lastOddsUpdateMessage);
+                new BetSettlementMessage("match-3", BetSettlementMessage.OutCome.DRAW),
+                queueSender.lastBetSettlementMessage);
+        assertNull(queueSender.lastOddsChangeMessage);
     }
 
     @Test
@@ -114,12 +115,12 @@ class ProviderFeedControllerTest {
                           "status": "accepted",
                           "provider": "provider-beta",
                           "eventId": "match-4",
-                          "feedType": "odds_update"
+                          "msgType": "odds_update"
                         }
                         """, false));
 
-        assertEquals(new OddsUpdateMessage("match-4", 1.9f, 2.8f, 4.7f), queueSender.lastOddsUpdateMessage);
-        assertNull(queueSender.lastSettlementMessage);
+        assertEquals(new OddsChangeMessage("match-4", 1.9f, 2.8f, 4.7f), queueSender.lastOddsChangeMessage);
+        assertNull(queueSender.lastBetSettlementMessage);
     }
 
     @Test
@@ -140,13 +141,14 @@ class ProviderFeedControllerTest {
                           "status": "accepted",
                           "provider": "provider-beta",
                           "eventId": "match-2",
-                          "feedType": "settlement"
+                          "msgType": "settlement"
                         }
                         """, false));
 
         assertEquals(
-                new SettlementMessage("match-2", SettlementMessage.OutCome.AWAY), queueSender.lastSettlementMessage);
-        assertNull(queueSender.lastOddsUpdateMessage);
+                new BetSettlementMessage("match-2", BetSettlementMessage.OutCome.AWAY),
+                queueSender.lastBetSettlementMessage);
+        assertNull(queueSender.lastOddsChangeMessage);
     }
 
     @Test
@@ -173,8 +175,8 @@ class ProviderFeedControllerTest {
                         }
                         """, false));
 
-        assertNull(queueSender.lastOddsUpdateMessage);
-        assertNull(queueSender.lastSettlementMessage);
+        assertNull(queueSender.lastOddsChangeMessage);
+        assertNull(queueSender.lastBetSettlementMessage);
     }
 
     @Test
@@ -199,8 +201,8 @@ class ProviderFeedControllerTest {
                         }
                         """, false));
 
-        assertNull(queueSender.lastOddsUpdateMessage);
-        assertNull(queueSender.lastSettlementMessage);
+        assertNull(queueSender.lastOddsChangeMessage);
+        assertNull(queueSender.lastBetSettlementMessage);
     }
 
     @Test
@@ -227,8 +229,8 @@ class ProviderFeedControllerTest {
                         }
                         """, false));
 
-        assertNull(queueSender.lastOddsUpdateMessage);
-        assertNull(queueSender.lastSettlementMessage);
+        assertNull(queueSender.lastOddsChangeMessage);
+        assertNull(queueSender.lastBetSettlementMessage);
     }
 
     @Test
@@ -258,8 +260,8 @@ class ProviderFeedControllerTest {
                         }
                         """, false));
 
-        assertNull(queueSender.lastOddsUpdateMessage);
-        assertNull(queueSender.lastSettlementMessage);
+        assertNull(queueSender.lastOddsChangeMessage);
+        assertNull(queueSender.lastBetSettlementMessage);
     }
 
     @Test
@@ -290,8 +292,8 @@ class ProviderFeedControllerTest {
                         }
                         """, false));
 
-        assertNull(queueSender.lastOddsUpdateMessage);
-        assertNull(queueSender.lastSettlementMessage);
+        assertNull(queueSender.lastOddsChangeMessage);
+        assertNull(queueSender.lastBetSettlementMessage);
     }
 
     @Test
@@ -325,22 +327,22 @@ class ProviderFeedControllerTest {
                         }
                         """, false));
 
-        assertNull(queueSender.lastOddsUpdateMessage);
-        assertNull(queueSender.lastSettlementMessage);
+        assertNull(queueSender.lastOddsChangeMessage);
+        assertNull(queueSender.lastBetSettlementMessage);
     }
 
     private static final class CapturingQueueSender implements QueueSender {
-        private SettlementMessage lastSettlementMessage;
-        private OddsUpdateMessage lastOddsUpdateMessage;
+        private BetSettlementMessage lastBetSettlementMessage;
+        private OddsChangeMessage lastOddsChangeMessage;
 
         @Override
-        public void publishBetSettlementMessage(SettlementMessage settlementMessage) {
-            this.lastSettlementMessage = settlementMessage;
+        public void publishBetSettlementMessage(BetSettlementMessage betSettlementMessage) {
+            this.lastBetSettlementMessage = betSettlementMessage;
         }
 
         @Override
-        public void publishOddsChangeMessage(OddsUpdateMessage oddsUpdateMessage) {
-            this.lastOddsUpdateMessage = oddsUpdateMessage;
+        public void publishOddsChangeMessage(OddsChangeMessage oddsChangeMessage) {
+            this.lastOddsChangeMessage = oddsChangeMessage;
         }
     }
 }

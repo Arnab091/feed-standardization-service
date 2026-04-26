@@ -90,7 +90,7 @@ public class FeedControllerAdvice {
         }
         detail += ".";
 
-        LOGGER.warn("Malformed JSON payload: " + detail, exception);
+        LOGGER.warn("Malformed JSON payload: {}", detail, exception);
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, detail);
         problemDetail.setTitle("Malformed JSON request");
         problemDetail.setProperty("errorCategory", "MALFORMED_JSON");
@@ -107,7 +107,7 @@ public class FeedControllerAdvice {
                 ? "JSON type discriminator has unsupported value '%s'.".formatted(exception.getTypeId())
                 : "JSON field '%s' has unsupported value '%s'.".formatted(field, exception.getTypeId());
 
-        LOGGER.warn("Unsupported JSON subtype for request body: " + detail, exception);
+        LOGGER.warn("Unsupported JSON subtype for request body: {}", detail, exception);
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_CONTENT, detail);
         problemDetail.setTitle("Unsupported feed type");
         problemDetail.setProperty("errorCategory", "INVALID_TYPE_ID");
@@ -123,7 +123,7 @@ public class FeedControllerAdvice {
         String detail = "JSON field '%s' has value '%s' that cannot be converted to %s."
                 .formatted(path, exception.getValue(), exception.getTargetType().getSimpleName());
 
-        LOGGER.warn("Invalid JSON value: " + detail, exception);
+        LOGGER.warn("Invalid JSON value: {}", detail, exception);
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_CONTENT, detail);
         problemDetail.setTitle("Invalid JSON value");
         problemDetail.setProperty("errorCategory", "INVALID_FORMAT");
@@ -142,7 +142,7 @@ public class FeedControllerAdvice {
                 : "JSON field '%s' has value '%s' that cannot be converted to %s."
                         .formatted(path, rejectedValue, expectedType);
 
-        LOGGER.warn("Invalid instantiated JSON value: " + detail, exception);
+        LOGGER.warn("Invalid instantiated JSON value: {}", detail, exception);
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_CONTENT, detail);
         problemDetail.setTitle("Invalid JSON value");
         problemDetail.setProperty("errorCategory", "INVALID_FORMAT");
@@ -162,7 +162,7 @@ public class FeedControllerAdvice {
                 ? "JSON body structure is invalid for this endpoint."
                 : "JSON field '%s' has an invalid structure for this endpoint.".formatted(path);
 
-        LOGGER.warn("Invalid JSON structure: " + detail, exception);
+        LOGGER.warn("Invalid JSON structure: {}", detail, exception);
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_CONTENT, detail);
         problemDetail.setTitle("Invalid JSON structure");
         problemDetail.setProperty("errorCategory", "MISMATCHED_INPUT");
@@ -235,7 +235,7 @@ public class FeedControllerAdvice {
         StringBuilder jsonPath = new StringBuilder();
         Class<?> currentType = target.getClass();
         for (String segment : fieldPath.split("\\.")) {
-            if (jsonPath.length() > 0) {
+            if (!jsonPath.isEmpty()) {
                 jsonPath.append('.');
             }
 

@@ -217,7 +217,7 @@ When a payload is accepted, the API returns a response like this:
   "status": "accepted",
   "provider": "provider-alpha",
   "eventId": "match-1",
-  "feedType": "odds_update"
+  "msgType": "odds_update"
 }
 ```
 

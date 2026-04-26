@@ -14,10 +14,10 @@ import com.sporty.feedstandardizationservice.message.external.FeedDTO;
         property = "type",
         visible = true)
 @JsonSubTypes({
-    @JsonSubTypes.Type(value = BetaFeedOddsUpdateDTO.class, name = "ODDS"),
-    @JsonSubTypes.Type(value = BetaFeedSettlementDTO.class, name = "SETTLEMENT")
+    @JsonSubTypes.Type(value = BetaFeedOddsChangeDTO.class, name = "ODDS"),
+    @JsonSubTypes.Type(value = BetaFeedBetSettlementDTO.class, name = "SETTLEMENT")
 })
-public sealed interface BetaFeedDTO extends FeedDTO permits BetaFeedOddsUpdateDTO, BetaFeedSettlementDTO {
+public sealed interface BetaFeedDTO extends FeedDTO permits BetaFeedOddsChangeDTO, BetaFeedBetSettlementDTO {
     @JsonProperty("event_id")
     String eventId();
 }

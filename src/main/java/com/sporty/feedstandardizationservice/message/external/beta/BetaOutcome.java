@@ -2,20 +2,20 @@ package com.sporty.feedstandardizationservice.message.external.beta;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.sporty.feedstandardizationservice.message.internal.SettlementMessage;
+import com.sporty.feedstandardizationservice.message.internal.BetSettlementMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public enum BetaOutcome {
-    HOME("home", SettlementMessage.OutCome.HOME),
-    DRAW("draw", SettlementMessage.OutCome.DRAW),
-    AWAY("away", SettlementMessage.OutCome.AWAY);
+    HOME("home", BetSettlementMessage.OutCome.HOME),
+    DRAW("draw", BetSettlementMessage.OutCome.DRAW),
+    AWAY("away", BetSettlementMessage.OutCome.AWAY);
 
     private final String code;
-    private final SettlementMessage.OutCome mappedOutcome;
+    private final BetSettlementMessage.OutCome mappedOutcome;
     private static final Logger LOGGER = LoggerFactory.getLogger(BetaOutcome.class);
 
-    BetaOutcome(String code, SettlementMessage.OutCome mappedOutcome) {
+    BetaOutcome(String code, BetSettlementMessage.OutCome mappedOutcome) {
         this.code = code;
         this.mappedOutcome = mappedOutcome;
     }
@@ -38,7 +38,7 @@ public enum BetaOutcome {
         return code;
     }
 
-    public SettlementMessage.OutCome toMessageOutcome() {
+    public BetSettlementMessage.OutCome toMessageOutcome() {
         LOGGER.debug("Mapped provider-beta outcome {} to internal outcome {}", code, mappedOutcome);
         return mappedOutcome;
     }

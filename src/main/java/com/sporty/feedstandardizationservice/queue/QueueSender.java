@@ -1,10 +1,10 @@
 package com.sporty.feedstandardizationservice.queue;
 
-import com.sporty.feedstandardizationservice.message.internal.OddsUpdateMessage;
-import com.sporty.feedstandardizationservice.message.internal.SettlementMessage;
+import com.sporty.feedstandardizationservice.message.internal.BetSettlementMessage;
+import com.sporty.feedstandardizationservice.message.internal.OddsChangeMessage;
 
 public interface QueueSender {
-    void publishBetSettlementMessage(SettlementMessage settlementMessage);
+    void publishBetSettlementMessage(BetSettlementMessage betSettlementMessage);
 
-    void publishOddsChangeMessage(OddsUpdateMessage oddsUpdateMessage);
+    void publishOddsChangeMessage(OddsChangeMessage oddsChangeMessage);
 }

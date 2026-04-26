@@ -1,7 +1,7 @@
 package com.sporty.feedstandardizationservice.rest;
 
-import com.sporty.feedstandardizationservice.message.OddsUpdateDTO;
-import com.sporty.feedstandardizationservice.message.SettlementDTO;
+import com.sporty.feedstandardizationservice.message.BetSettlementDTO;
+import com.sporty.feedstandardizationservice.message.OddsChangeDTO;
 import com.sporty.feedstandardizationservice.message.external.FeedDTO;
 import com.sporty.feedstandardizationservice.queue.QueueSender;
 import org.slf4j.Logger;
@@ -19,7 +19,7 @@ public abstract class BaseFeedController {
     // Centralize the provider-agnostic routing so both controllers stay thin.
     protected ResponseEntity<FeedAcceptedResponse> processFeed(String provider, FeedDTO feedDTO) {
         switch (feedDTO) {
-            case OddsUpdateDTO oddsUpdateDTO -> {
+            case OddsChangeDTO oddsUpdateDTO -> {
                 LOGGER.debug(
                         "Processing odds update for eventId={} with payloadType={}",
                         feedDTO.eventId(),
@@ -27,12 +27,12 @@ public abstract class BaseFeedController {
                 queueSender.publishOddsChangeMessage(oddsUpdateDTO.toOddsChangeMessage());
                 return acceptedResponse(provider, feedDTO, "odds_update");
             }
-            case SettlementDTO settlementDTO -> {
+            case BetSettlementDTO betSettlementDTO -> {
                 LOGGER.debug(
                         "Processing settlement for eventId={} with payloadType={}",
                         feedDTO.eventId(),
                         feedDTO.getClass().getSimpleName());
-                queueSender.publishBetSettlementMessage(settlementDTO.toBetSettlementMessage());
+                queueSender.publishBetSettlementMessage(betSettlementDTO.toBetSettlementMessage());
                 return acceptedResponse(provider, feedDTO, "settlement");
             }
             default -> {
@@ -46,9 +46,8 @@ public abstract class BaseFeedController {
         }
     }
 
-    private ResponseEntity<FeedAcceptedResponse> acceptedResponse(String provider, FeedDTO feedDTO, String feedType) {
-        FeedAcceptedResponse response = FeedAcceptedResponse.accepted(provider, feedDTO.eventId(), feedType);
-        LOGGER.info("Accepted {} feed for provider={} and eventId={}", feedType, provider, feedDTO.eventId());
+    private ResponseEntity<FeedAcceptedResponse> acceptedResponse(String provider, FeedDTO feedDTO, String msgType) {
+        FeedAcceptedResponse response = FeedAcceptedResponse.accepted(provider, feedDTO.eventId(), msgType);
         return ResponseEntity.accepted().body(response);
     }
 }
